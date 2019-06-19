@@ -1,0 +1,307 @@
+# デフォルトの設定を変更 上書きは有効
+
+# アコーディオンパネルのレイアウト初期設定
+[AccordionItemTitle@Label]:
+    text: ctx.title
+    font_size: 30
+    color: self.color 
+    canvas.before:
+        Color:
+            rgb: 1, 1, 0
+        BorderImage:
+            source:
+                ctx.item.background_normal if ctx.item.collapse else ctx.item.background_selected
+            pos: self.pos
+            size: self.size
+        PushMatrix
+        Translate:
+            xy: self.center_x, self.center_y
+        Rotate:
+            angle: 90 if ctx.item.orientation == 'horizontal' else 0
+            axis: 0, 0, 1
+        Translate:
+            xy: -self.center_x, -self.center_y
+    canvas.after:
+        PopMatrix
+
+# Videoの初期設定
+<Video>:
+    # 画面を黒塗り、main.pyに記載の位置、サイズ
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    # 画面中央に全画面表示
+    allow_stretch: True
+    
+# ボタンのフォントサイズを30で統一
+<Button>:
+    font_size: 20
+    
+<BoxLayout>:
+    orientation: 'horizontal'
+    size: root.size
+    # 背景を黒塗りに
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+
+
+# MainClassの設定ファイル ここからが画面の編集
+<MainClass>:
+    BoxLayout:
+
+	    orientation: 'vertical'  # 縦に並べる
+	    #orientation: 'horizontal'  # 横に並べる
+	    
+	    BoxLayout: # rasor ON/OFF
+	        Label:
+	            size_hint_x: 0.3
+	            text: 'レーザー'
+	        Button:
+	            size_hint_x: 0.7
+	            text: 'OFF'
+	            id: rasor_status
+	            background_color: (1.0, 0.0, 0.0, 1.0)
+	            on_release: root.rasor_onoff()
+	             
+	    BoxLayout: # Rec ON/OFF
+	        Label:
+	            size_hint_x: 0.3
+	            text: 'Rec'
+	        Button:
+	            size_hint_x: 0.7
+	            text: 'OFF'
+	            id: rec_status
+	            background_color: (1.0, 0.0, 0.0, 1.0)
+	            on_release: root.rec_onoff()
+
+	    BoxLayout: # take a picture
+	        Label:
+	            size_hint_x: 0.3
+	            text: '静止画'
+	        Button:
+	            size_hint_x: 0.7
+	            text: 'take!'
+	            id: take_pic
+	            background_color: (1.0, 1.0, 0.0, 1.0)
+	            on_release: root.take_pic()
+
+	    BoxLayout: # Total Power
+	        Label:
+	            size_hint_x: 0.3
+	            text: '総出力'
+	        TextInput:
+	            size_hint_x: 0.4
+	            id: main_power
+	            text: '10'
+	        Button:
+	            size_hint_x: 0.3
+	            text: '更新'
+	            canvas.before:
+	                Color:
+	                    rgba: 0, 0, 1, 0
+	                Rectangle:
+	                    pos: self.pos
+	                    size: self.size
+	            on_release: root.main_power()
+	            
+	    BoxLayout: # Continuous rec
+	        Button:
+	            text: '連続撮影'
+	            canvas.before:
+	                Color:
+	                    rgba: 0, 0, 1, 0
+	                Rectangle:
+	                    pos: self.pos
+	                    size: self.size
+	            on_release: root.take_all()
+
+	    BoxLayout: # 区切り
+	        size_hint_y: 0.05
+            canvas.before:
+                Color:
+                    rgba: 0, 1, 1, 0.5
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+                    
+                    
+                    
+	    BoxLayout:  # ラベル
+	        Label:
+	            size_hint_x: 0.2
+	            text: "ch"
+	        Label:
+	            size_hint_x: 0.3
+	            text: "波長"
+	        Label:
+	            size_hint_x: 0.3
+	            text: "出力"
+	        Label:
+	            size_hint_x: 0.2
+	            text: "更新"
+	            
+	    BoxLayout:  # 各チャンネルの詳細
+	        Label:
+	            size_hint_x: 0.2
+	            text: "ch1"
+	        TextInput:
+	            size_hint_x: 0.3
+	            id: ch1_wavelength
+	            text: '640'
+	        TextInput:
+	            size_hint_x: 0.3
+	            id: ch1_power
+	            text: '10'
+			CheckBox:
+				size_hint_x: 0.2
+		        active: root.is_checked1
+		        on_active: root.is_checked = args[1]
+
+	    BoxLayout:  # 各チャンネルの詳細
+	        Label:
+	            size_hint_x: 0.2
+	            text: "ch2"
+	        TextInput:
+	            size_hint_x: 0.3
+	            id: ch2_wavelength
+	            text: '640'
+	        TextInput:
+	            size_hint_x: 0.3
+	            id: ch2_power
+	            text: '10'
+			CheckBox:
+				size_hint_x: 0.2
+		        active: root.is_checked2
+		        on_active: root.is_checked = args[1]
+
+	    BoxLayout:  # 各チャンネルの詳細
+	        Label:
+	            size_hint_x: 0.2
+	            text: "ch3"
+	        TextInput:
+	            size_hint_x: 0.3
+	            id: ch3_wavelength
+	            text: '640'
+	        TextInput:
+	            size_hint_x: 0.3
+	            id: ch3_power
+	            text: '10'
+			CheckBox:
+				size_hint_x: 0.2
+		        active: root.is_checked3
+		        on_active: root.is_checked = args[1]
+
+	    BoxLayout:  # 各チャンネルの詳細
+	        Label:
+	            size_hint_x: 0.2
+	            text: "ch4"
+	        TextInput:
+	            size_hint_x: 0.3
+	            id: ch4_wavelength
+	            text: '640'
+	        TextInput:
+	            size_hint_x: 0.3
+	            id: ch4_power
+	            text: '10'
+			CheckBox:
+				size_hint_x: 0.2
+		        active: root.is_checked4
+		        on_active: root.is_checked = args[1]
+
+	    BoxLayout:  # 各チャンネルの詳細
+	        Label:
+	            size_hint_x: 0.2
+	            text: "ch5"
+	        TextInput:
+	            size_hint_x: 0.3
+	            id: ch5_wavelength
+	            text: '640'
+	        TextInput:
+	            size_hint_x: 0.3
+	            id: ch5_power
+	            text: '10'
+			CheckBox:
+				size_hint_x: 0.2
+		        active: root.is_checked5
+		        on_active: root.is_checked = args[1]
+
+	    BoxLayout:  # 各チャンネルの詳細
+	        Label:
+	            size_hint_x: 0.2
+	            text: "ch6"
+	        TextInput:
+	            size_hint_x: 0.3
+	            id: ch6_wavelength
+	            text: '640'
+	        TextInput:
+	            size_hint_x: 0.3
+	            id: ch6_power
+	            text: '10'
+			CheckBox:
+				size_hint_x: 0.2
+		        active: root.is_checked6
+		        on_active: root.is_checked = args[1]
+
+	    BoxLayout:  # 各チャンネルの詳細
+	        Label:
+	            size_hint_x: 0.2
+	            text: "ch7"
+	        TextInput:
+	            size_hint_x: 0.3
+	            id: ch7_wavelength
+	            text: '640'
+	        TextInput:
+	            size_hint_x: 0.3
+	            id: ch7_power
+	            text: '10'
+			CheckBox:
+				size_hint_x: 0.2
+		        active: root.is_checked7
+		        on_active: root.is_checked = args[1]
+
+	    BoxLayout:  # 各チャンネルの詳細
+	        Label:
+	            size_hint_x: 0.2
+	            text: "ch8"
+	        TextInput:
+	            size_hint_x: 0.3
+	            id: ch8_wavelength
+	            text: '640'
+	        TextInput:
+	            size_hint_x: 0.3
+	            id: ch8_power
+	            text: '10'
+			CheckBox:
+				size_hint_x: 0.2
+		        active: root.is_checked8
+		        on_active: root.is_checked = args[1]
+
+
+
+# ポップアップの設定
+<LoadDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: 'vertical'
+        FileChooserListView:
+            id: filechooser
+
+        BoxLayout:
+            size_hint_y : None
+            height : 30
+            Button:
+                text: 'キャンセル'
+                on_release: root.cancel()
+
+            Button:
+                text: '読み込み'
+                on_release: root.load(filechooser.path, filechooser.selection)
